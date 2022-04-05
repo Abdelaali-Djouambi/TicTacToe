@@ -1,20 +1,17 @@
 package com.example.tictactoe.exceptions;
 
-import lombok.Builder;
 import lombok.Data;
-import org.springframework.http.HttpStatus;
+import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-@Builder
-public class HttpErrorResponse {
+@NoArgsConstructor
+public class ApiErrorResponse {
 
-    HttpStatus status;
     private String message;
-    private Integer errorCode;
+    private String errorCode;
     private LocalDateTime timestamp;
-    private List<String> subErrors;
+    private List<String> fieldErrors;
 }

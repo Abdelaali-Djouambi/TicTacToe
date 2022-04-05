@@ -1,7 +1,7 @@
 package com.example.tictactoe.exceptions;
 
-public class NotAuthorizedException extends RuntimeException{
-    public NotAuthorizedException(String message) {
+public class NotAllowedException extends RuntimeException{
+    public NotAllowedException(String message) {
         super(message);
     }
 }

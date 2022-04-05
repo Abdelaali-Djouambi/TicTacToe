@@ -1,4 +1,4 @@
-package com.example.tictactoe;
+package com.example.tictactoe.config;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
@@ -9,6 +9,7 @@ public class TicTacToeConfiguration {
 
     @Bean
     public ModelMapper modelMapper(){
-        return new ModelMapper();
+       return new ModelMapper();
     }
+
 }

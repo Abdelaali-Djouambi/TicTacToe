@@ -1,0 +1,2 @@
+INSERT INTO PLAYER VALUES ('foo','foo','');
+INSERT INTO PLAYER VALUES ('faa','faa','');

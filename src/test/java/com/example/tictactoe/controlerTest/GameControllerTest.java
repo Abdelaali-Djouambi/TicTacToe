@@ -1,31 +1,30 @@
-package controlerTest;
+package com.example.tictactoe.controlerTest;
 
-import com.example.tictactoe.DTO.GameDTO;
-import com.example.tictactoe.DTO.PlayerDTO;
 import com.example.tictactoe.controller.GameController;
+import com.example.tictactoe.dto.GameDTO;
+import com.example.tictactoe.dto.PlayDTO;
+import com.example.tictactoe.fixture.GameFixture;
 import com.example.tictactoe.model.Game;
 import com.example.tictactoe.service.GameService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import java.util.Optional;
 
-@SpringBootTest
-@ExtendWith(SpringExtension.class)
-public class GameControllerTest {
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class GameControllerTest {
 
     @InjectMocks
     GameController gameController;
@@ -35,77 +34,97 @@ public class GameControllerTest {
 
     @Test
     @DisplayName("POST /game - Start game first player")
-    public void testInitGamePlayerX() {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-
-        GameDTO mockGameDTO = new GameDTO();
-        PlayerDTO mockPlayerX = new PlayerDTO("foo", "foo", "foo");
-        mockGameDTO.setPlayerX(mockPlayerX);
-        mockGameDTO.setStatus(Game.Status.WAITING_OPPONENT.toString());
-        Mockito.when(gameService.initGame(any(String.class))).thenReturn(mockGameDTO);
+    void initGameFirstPlayerX() {
+        GameDTO gameDTO = GameFixture.getGameDTO(false);
+        when(gameService.initGame(any(String.class))).thenReturn(Optional.of(gameDTO));
 
         ResponseEntity<GameDTO> responseEntity = gameController.startGame("foo");
 
         assertThat(responseEntity.getStatusCodeValue()).isEqualTo(201);
-        assertThat(responseEntity.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
-
-        assertThat(responseEntity.getHeaders().getLocation().getPath()).isEqualTo("/1");
-
-        assertThat(responseEntity.getBody().getVersion().equals(Long.valueOf(1)));
-        assertThat(responseEntity.getBody().getStatus().equals(Game.Status.WAITING_OPPONENT));
-        assertThat(responseEntity.getBody().getPlayerX().getAlias().equals(mockPlayerX.getAlias()));
+        assertThat(responseEntity.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+        assertThat(responseEntity.getHeaders().getLocation().getPath()).isEqualTo("/game/1");
+        assertThat(responseEntity.getBody().getVersion()).isEqualTo(Long.valueOf(1));
+        assertThat(responseEntity.getBody().getStatus()).isEqualTo(Game.Status.WAITING_OPPONENT.name());
+        assertThat(responseEntity.getBody().getPlayerX().getFirstName()).isEqualTo(gameDTO.getPlayerX().getFirstName());
     }
 
-   /* @Test
-    @DisplayName("POST /game - Join game secound player")
-    public void testInitGamePlayerO() {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-        GameDTO mockGameDTO = new GameDTO();
-        PlayerDTO mockPlayerDTO_X = new PlayerDTO("player_X", "X", "foo");
-        PlayerDTO mockPlayerDTO_O = new PlayerDTO("player_O", "O", "fii");
+    @Test
+    @DisplayName("POST /game - Start game second player")
+    void initGameSecondPlayerO() {
+        GameDTO gameDTO = GameFixture.getGameDTO(true);
+        when(gameService.initGame(any(String.class))).thenReturn(Optional.of(gameDTO));
 
-        mockGameDTO.setPlayerX(mockPlayerDTO_X);
-        mockGameDTO.setStatus(Game.Status.WAITING_OPPONENT.toString());
-        Mockito.when(gameService.initGame(ArgumentMatchers.any(StartGameDTO.class))).thenReturn(mockGameDTO);
+        ResponseEntity<GameDTO> responseEntity = gameController.startGame("faa");
 
-        StartGameDTO startGameDTO = new StartGameDTO("fii", 'O');
-        ResponseEntity<GameDTO> responseEntity = gameController.startGame(startGameDTO);
+        assertThat(responseEntity.getStatusCodeValue()).isEqualTo(200);
+        assertThat(responseEntity.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+        assertThat(responseEntity.getHeaders().getLocation().getPath()).isEqualTo("/game/1");
+        assertThat(responseEntity.getBody().getVersion()).isEqualTo((Long.valueOf(2)));
+        assertThat(responseEntity.getBody().getStatus()).isEqualTo((Game.Status.X_TURN.name()));
+        assertThat(responseEntity.getBody().getPlayerX().getFirstName()).isEqualTo((gameDTO.getPlayerX().getFirstName()));
+        assertThat(responseEntity.getBody().getPlayerX().getLastName()).isEqualTo((gameDTO.getPlayerX().getLastName()));
 
-        assertThat(responseEntity.getStatusCodeValue()).isEqualTo(201);
-        assertThat(responseEntity.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
+}
 
-        assertThat(responseEntity.getHeaders().getLocation().getPath()).isEqualTo("/1");
+    @Test
+    @DisplayName("GET /game - Returns game details")
+    void gameStatusSuccess() {
+        PlayDTO playDTO = new PlayDTO("foo",0,1l);
+        GameDTO gameDTO = GameFixture.getGameDTO(true);
+        gameDTO.setBoard(GameFixture.getGameMapDraw());
+        gameDTO.getBoard().put(0, Game.FRAME_VALUE.X.toString());
+        gameDTO.setStatus(Game.Status.X_TURN.toString());
+        when(gameService.gameStatus(any(Long.class))).thenReturn(Optional.of(gameDTO));
+        Long gameId=12l;
+        ResponseEntity<GameDTO> responseEntity = gameController.gameStatus(gameId);
 
-        assertThat(responseEntity.getBody().getVersion().equals(Long.valueOf(1)));
-        assertThat(responseEntity.getBody().getStatus().equals(Game.Status.X_TURN));
-        assertThat(responseEntity.getBody().getPlayerX().getAlias().equals(mockPlayerDTO_X.getAlias()));
-        assertThat(responseEntity.getBody().getPlayerO().getAlias().equals(mockPlayerDTO_O.getAlias()));
-    }*/
-
-   /* @Test
-    @DisplayName("POST /game - Bad request : player already in game")
-    public void testInitGameBadRequest() {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-
-        GameDTO mockGameDTO = new GameDTO();
-        PlayerDTO mockPlayerX = new PlayerDTO("player_X", "X", "foo");
-        PlayerDTO mockPlayerO = new PlayerDTO("player_O", "O", "fii");
-
-        mockGameDTO.setPlayerX(mockPlayerX);
-        mockGameDTO.setPlayerO(mockPlayerO);
-        mockGameDTO.setStatus(Game.Status.X_TURN.toString());
-        Mockito.when(gameService.initGame(ArgumentMatchers.any(StartGameDTO.class))).thenReturn(()-> throw new BadRequestException(""));
-
-        StartGameDTO startGameDTO = new StartGameDTO("fii", 'O');
-        ResponseEntity<GameDTO> responseEntity = gameController.startGame(startGameDTO);
-
-        assertThat(responseEntity.getStatusCodeValue()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(responseEntity.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
-        assertThat(responseEntity.getHeaders().getLocation().getPath()).isEqualTo("/1");
+        assertThat(responseEntity.getStatusCodeValue()).isEqualTo(200);
+        assertThat(responseEntity.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+        assertThat(responseEntity.getHeaders().getLocation().getPath()).isEqualTo("/game/"+gameId+"/status");
+        assertThat(responseEntity.getBody().getVersion()).isEqualTo(Long.valueOf(2));
+        assertThat(responseEntity.getBody().getStatus()).isEqualTo(Game.Status.X_TURN.toString());
+        assertThat(responseEntity.getBody().getBoard()).containsEntry(0,Game.FRAME_VALUE.X.name());
+        assertThat(responseEntity.getBody().getPlayerX().getFirstName()).isEqualTo(gameDTO.getPlayerX().getFirstName());
     }
-*/
+    @Test
+    @DisplayName("GET /game - Game id not found")
+    void gameStatusErrorNotFound() {
+
+        when(gameService.gameStatus(any(Long.class))).thenReturn(Optional.empty());
+        Long gameId=12l;
+
+        ResponseEntity<GameDTO> responseEntity = gameController.gameStatus(gameId);
+
+        Assertions.assertEquals(HttpStatus.NOT_FOUND,responseEntity.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("GET /game - Cancel an ongoing game success")
+    void cancelGameSuccess() {
+        PlayDTO playDTO = new PlayDTO("foo",0,1l);
+        GameDTO gameDTO = GameFixture.getGameDTO(true);
+        gameDTO.setBoard(GameFixture.getGameMapDraw());
+        gameDTO.setStatus(Game.Status.CANCELED.toString());
+        when(gameService.cancelGame(any(Long.class))).thenReturn(Optional.of(gameDTO));
+        Long gameId=12l;
+        ResponseEntity<GameDTO> responseEntity = gameController.cancelGame(gameId);
+
+        assertThat(responseEntity.getStatusCodeValue()).isEqualTo(200);
+        assertThat(responseEntity.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+        assertThat(responseEntity.getHeaders().getLocation().getPath()).isEqualTo("/game/"+gameId+"/cancel");
+        assertThat(responseEntity.getBody().getVersion()).isEqualTo((Long.valueOf(2)));
+        assertThat(responseEntity.getBody().getStatus()).isEqualTo((Game.Status.CANCELED.toString()));
+        assertThat(responseEntity.getBody().getPlayerX().getFirstName()).isEqualTo((gameDTO.getPlayerX().getFirstName()));
+    }
+    @Test
+    @DisplayName("GET /game - Game id not found")
+    void cancelGameErrorNotFound() {
+
+        when(gameService.cancelGame(any(Long.class))).thenReturn(Optional.empty());
+
+        ResponseEntity<GameDTO> responseEntity = gameController.cancelGame(12l);
+
+        Assertions.assertEquals(HttpStatus.NOT_FOUND,responseEntity.getStatusCode());
+    }
 }
