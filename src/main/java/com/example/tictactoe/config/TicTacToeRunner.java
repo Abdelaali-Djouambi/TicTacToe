@@ -16,7 +16,7 @@ public class TicTacToeRunner  implements ApplicationListener<ApplicationReadyEve
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        playerRepository.save(new Player("foo","foo",""));
-        playerRepository.save(new Player("faa","faa",""));
+        playerRepository.save(new Player("foo","foo","foo"));
+        playerRepository.save(new Player("faa","faa","faa"));
     }
 }
