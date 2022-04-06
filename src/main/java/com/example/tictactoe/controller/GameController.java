@@ -101,7 +101,7 @@ public class GameController {
         return gameService.cancelGame(gameId).map(
                 gameDTO -> ResponseEntity
                         .ok()
-                        .header(LOCATION, GAME + gameId + "/cancel")
+                        .header(LOCATION, GAME + "cancel")
                         .contentType(MediaType.APPLICATION_JSON)
                         .eTag(Long.toString(gameDTO.getVersion()))
                         .body(gameDTO)).orElse(ResponseEntity.notFound().build());

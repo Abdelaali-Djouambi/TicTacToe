@@ -112,7 +112,7 @@ class GameControllerTest {
 
         assertThat(responseEntity.getStatusCodeValue()).isEqualTo(200);
         assertThat(responseEntity.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
-        assertThat(responseEntity.getHeaders().getLocation().getPath()).isEqualTo("/game/"+gameId+"/cancel");
+        assertThat(responseEntity.getHeaders().getLocation().getPath()).isEqualTo("/game/cancel");
         assertThat(responseEntity.getBody().getVersion()).isEqualTo((Long.valueOf(2)));
         assertThat(responseEntity.getBody().getStatus()).isEqualTo((Game.Status.CANCELED.toString()));
         assertThat(responseEntity.getBody().getPlayerX().getFirstName()).isEqualTo((gameDTO.getPlayerX().getFirstName()));
