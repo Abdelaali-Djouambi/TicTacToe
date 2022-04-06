@@ -39,7 +39,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
-    <artifactId>TticTacToe</artifactId>
+    <artifactId>TicTacToe</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>TicTacToe</name>
     <description>TicTacToe</description>
