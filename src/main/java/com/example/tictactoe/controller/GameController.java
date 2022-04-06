@@ -6,7 +6,6 @@ import com.example.tictactoe.service.GameService;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +32,9 @@ public class GameController {
             @ApiResponse(code = 404, response = GameDTO.class,message = "Player not found"),
             @ApiResponse(code = 400, response = GameDTO.class,message = "Player already in game")
     })
-    @Operation(description = "When a first call, Player X creates a game and waits for player O to start playing," +
-            "In the second call Player O, join the game and the game starts, X turn to play.")
+    @Operation(description = "When we call this endpoint the first time, Player X (player with the sent alias foo or faa) creates a game and waits for " +
+            "the second player, Player O, to join the game. </br>" +
+            "Once a second player calls this endpoint, he join.")
     @PostMapping(path = "/startGame", produces = "application/json", consumes = "application/json")
     public ResponseEntity<GameDTO> startGame(@RequestBody @Valid String playerAlias) {
         return gameService.initGame(playerAlias).map(gameDTO ->
@@ -96,8 +96,8 @@ public class GameController {
             @ApiResponse(code = 405, response = GameDTO.class,message = "Game can't be cancelled, game status must not be final")
     })
     @Operation(description = "Cancels a game.")
-    @PostMapping(path = "/{gameId}/cancel", produces = "application/json", consumes = "application/json")
-    public ResponseEntity<GameDTO> cancelGame(@PathVariable Long gameId) {
+    @PostMapping(path = "/cancel", produces = "application/json", consumes = "application/json")
+    public ResponseEntity<GameDTO> cancelGame(@RequestBody @Valid Long gameId) {
         return gameService.cancelGame(gameId).map(
                 gameDTO -> ResponseEntity
                         .ok()

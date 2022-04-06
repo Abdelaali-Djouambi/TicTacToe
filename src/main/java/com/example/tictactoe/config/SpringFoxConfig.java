@@ -25,7 +25,8 @@ public class SpringFoxConfig {
     private ApiInfo myApiInfo() {
         return new ApiInfoBuilder().title("TicTacToe Kata")
                 .description("This kata is a little application developped using SpringBoot 2.5.5. " +
-                        "It has multiple endpoints to play a TicTacToe game")
+                        "It has multiple endpoints to play a TicTacToe game </br>" +
+                        "There are two default players in this game, player foo, and player faa")
                 .contact(new Contact("Abdelaali Djouambi", "", "abdelaali.djouambi@digitalstrok.be"))
                 .build();
 

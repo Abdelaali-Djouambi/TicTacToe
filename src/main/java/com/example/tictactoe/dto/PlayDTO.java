@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
@@ -15,11 +16,11 @@ public class PlayDTO {
 
     @NotBlank
     private String playerAlias;
-    @NotBlank
-    @Min(0)
     @Max(8)
+    @Min(0)
+    @NotNull
     private int position;
-    @NotBlank
+    @NotNull
     private Long id;
 
 }
