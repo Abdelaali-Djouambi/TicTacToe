@@ -1,6 +1,9 @@
 # TicTacToe
-TicTacToe Kata using test driven developement, this application has multiple endpoints to simulate TicTacToe game between two players.
-# Prerequisites 
+
+TicTacToe Kata using TDD, this application has multiple endpoints to simulate TicTacToe game between two players.
+
+# Prerequisites
+
 In order to run the application, you need to have:
  1. JDK 18 (https://www.oracle.com/java/technologies/downloads/)
  2. Maven (https://maven.apache.org/download.cgi).
