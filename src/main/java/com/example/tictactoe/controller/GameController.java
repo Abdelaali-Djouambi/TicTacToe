@@ -5,6 +5,7 @@ import com.example.tictactoe.dto.PlayDTO;
 import com.example.tictactoe.service.GameService;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +20,11 @@ public class GameController {
 
     public static final String LOCATION = "Location";
     public static final String GAME = "/game/";
-    @Autowired
-    private GameService gameService;
+    private final GameService gameService;
+
+    public GameController(GameService gameService) {
+        this.gameService = gameService;
+    }
 
 
     @ApiResponses(value={
@@ -29,6 +33,8 @@ public class GameController {
             @ApiResponse(code = 404, response = GameDTO.class,message = "Player not found"),
             @ApiResponse(code = 400, response = GameDTO.class,message = "Player already in game")
     })
+    @Operation(description = "When a first call, Player X creates a game and waits for player O to start playing," +
+            "In the second call Player O, join the game and the game starts, X turn to play.")
     @PostMapping(path = "/startGame", produces = "application/json", consumes = "application/json")
     public ResponseEntity<GameDTO> startGame(@RequestBody @Valid String playerAlias) {
         return gameService.initGame(playerAlias).map(gameDTO ->
@@ -53,9 +59,10 @@ public class GameController {
     @ApiResponses(value={
             @ApiResponse(code = 200, response = GameDTO.class,message = "Player played successfully"),
             @ApiResponse(code = 404, response = GameDTO.class,message = "Player not found or game not found"),
-            @ApiResponse(code = 400, response = GameDTO.class,message = "Not the player's turn or player not in game"),
-            @ApiResponse(code = 405, response = GameDTO.class,message = "Invalid frame play")
+            @ApiResponse(code = 400, response = GameDTO.class,message = "Not the player's turn, game board position is already filled"),
+            @ApiResponse(code = 405, response = GameDTO.class,message = "Game ended, or player not in game")
     })
+    @Operation(description = "Player plays in one of the game-board's frames, the game-board has 9 frames.")
     @PostMapping(path = "/play", produces = "application/json", consumes = "application/json")
     public ResponseEntity<GameDTO> play(@Valid @RequestBody PlayDTO playDTO) {
         return gameService.play(playDTO).map(gameDTO ->
@@ -68,9 +75,10 @@ public class GameController {
     }
 
     @ApiResponses(value={
-            @ApiResponse(code = 200, response = GameDTO.class,message = "Game info found"),
+            @ApiResponse(code = 200, response = GameDTO.class,message = "Game found, details sent."),
             @ApiResponse(code = 404, response = GameDTO.class,message = "Game not found"),
     })
+    @Operation(description = "Returns a game details.")
     @GetMapping(path = "/{gameId}/status", produces = "application/json", consumes = "application/json")
     public ResponseEntity<GameDTO> gameStatus(@PathVariable Long gameId) {
         return gameService.gameStatus(gameId).map(
@@ -85,9 +93,10 @@ public class GameController {
     @ApiResponses(value={
             @ApiResponse(code = 200, response = GameDTO.class,message = "Game canceled"),
             @ApiResponse(code = 404, response = GameDTO.class,message = "Game not found"),
-            @ApiResponse(code = 405, response = GameDTO.class,message = "Game can't be cancelled duo to final status")
+            @ApiResponse(code = 405, response = GameDTO.class,message = "Game can't be cancelled, game status must not be final")
     })
-    @GetMapping(path = "/{gameId}/cancel", produces = "application/json", consumes = "application/json")
+    @Operation(description = "Cancels a game.")
+    @PostMapping(path = "/{gameId}/cancel", produces = "application/json", consumes = "application/json")
     public ResponseEntity<GameDTO> cancelGame(@PathVariable Long gameId) {
         return gameService.cancelGame(gameId).map(
                 gameDTO -> ResponseEntity
