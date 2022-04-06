@@ -28,12 +28,9 @@ You also need to configurate your user and system path variables for both java a
 
 # Data base access
 
-This application has an embedded H2 database, so that you don't need to install any drivers. You can access the embedded H2 database by browsing to http://localhost:8080/h2-console, use the following access parameters:
+This application has an embedded H2 database, so that you don't need to install any database drivers. You can access the embedded H2 database by browsing to http://localhost:8080/h2-console, use the following access parameters:
   
-  Driver Class = org.h2.Driver
-  JDBC URL = jdbc:h2:mem:testdb
-  User Name = sa
-  Password = password
+  Driver Class = org.h2.Driver, JDBC URL = jdbc:h2:mem:testdb, User Name = sa, Password = password
   
 # Documentation
 
