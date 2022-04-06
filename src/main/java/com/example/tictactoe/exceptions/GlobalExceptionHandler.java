@@ -49,7 +49,7 @@ public class GlobalExceptionHandler {
         ApiErrorResponse errorResponse = new ApiErrorResponse();
         List<String> errors =ex.getBindingResult().getFieldErrors().stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList());
-        errorResponse.setErrorCode(ErrorCode.NOT_ALLOWED_EXCEPTION.name());
+        errorResponse.setErrorCode(ErrorCode.VALIDATION_EXCEPTION.name());
         errorResponse.setMessage("Field validation errors");
         errorResponse.setTimestamp(LocalDateTime.now());
         errorResponse.setFieldErrors(errors);
