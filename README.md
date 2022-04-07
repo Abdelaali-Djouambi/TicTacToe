@@ -41,7 +41,7 @@ this openApi documentation presents the description of the different endpoints o
 
 You can test the endpoints using the Swagger UI in http://localhost:8080/swagger-ui/ as a REST Client, or use Postman or any other REST Client you have.
 
-# Testing the application
+# Running the unit tests
 
 You can run the tests of the applciation by moving to TicTacToe directory and running
 
