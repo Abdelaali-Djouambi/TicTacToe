@@ -1,16 +1,14 @@
 package com.example.tictactoe.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "player")
 public class Player extends AbstractEntity {

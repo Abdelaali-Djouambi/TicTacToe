@@ -3,6 +3,7 @@ package com.example.tictactoe.controlerTest;
 import com.example.tictactoe.controller.GameController;
 import com.example.tictactoe.dto.GameDTO;
 import com.example.tictactoe.dto.PlayDTO;
+import com.example.tictactoe.exceptions.BadRequestException;
 import com.example.tictactoe.fixture.GameFixture;
 import com.example.tictactoe.model.Game;
 import com.example.tictactoe.service.GameService;
@@ -70,7 +71,6 @@ class GameControllerTest {
     @Test
     @DisplayName("GET /game - Returns game details")
     void gameStatusSuccess() {
-        PlayDTO playDTO = new PlayDTO("foo",0,1l);
         GameDTO gameDTO = GameFixture.getGameDTO(true);
         gameDTO.setBoard(GameFixture.getGameMapDraw());
         gameDTO.getBoard().put(0, Game.FRAME_VALUE.X.toString());
@@ -87,6 +87,38 @@ class GameControllerTest {
         assertThat(responseEntity.getBody().getBoard()).containsEntry(0,Game.FRAME_VALUE.X.name());
         assertThat(responseEntity.getBody().getPlayerX().getFirstName()).isEqualTo(gameDTO.getPlayerX().getFirstName());
     }
+
+    @Test
+    @DisplayName("POST /game - Play game player X")
+    void playGamePlayerX() {
+        PlayDTO play = new PlayDTO("foo", 0, 10l);
+        GameDTO gameDTO=GameFixture.getGameDTO(true);
+        gameDTO.getBoard().put(0,Game.FRAME_VALUE.X.toString());
+        gameDTO.setStatus(Game.Status.O_TURN.toString());
+        when(gameService.play(any(PlayDTO.class))).thenReturn(Optional.of(gameDTO));
+
+        ResponseEntity<GameDTO> responseEntity = gameController.play(play);
+
+        assertThat(responseEntity.getStatusCodeValue()).isEqualTo(200);
+        assertThat(responseEntity.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+        assertThat(responseEntity.getHeaders().getLocation().getPath()).isEqualTo("/game/1");
+        assertThat(responseEntity.getBody().getStatus()).isEqualTo((Game.Status.O_TURN.name()));
+        assertThat(responseEntity.getBody().getPlayerX().getFirstName()).isEqualTo((gameDTO.getPlayerX().getFirstName()));
+        assertThat(responseEntity.getBody().getPlayerX().getLastName()).isEqualTo((gameDTO.getPlayerX().getLastName()));
+    }
+
+    @Test
+    @DisplayName("POST /game - Play game playerO - error")
+    void playGamePlayerO() {
+        PlayDTO playDTO = new PlayDTO("foo", 0, 10l);
+        GameDTO gameDTO=GameFixture.getGameDTO(true);
+        gameDTO.getBoard().put(0,Game.FRAME_VALUE.X.toString());
+        gameDTO.setStatus(Game.Status.O_TURN.toString());
+        when(gameService.play(any(PlayDTO.class))).thenThrow(BadRequestException.class);
+
+        Assertions.assertThrows(BadRequestException.class, ()->gameController.play(playDTO));
+    }
+
     @Test
     @DisplayName("GET /game - Game id not found")
     void gameStatusErrorNotFound() {

@@ -1,15 +1,14 @@
 package com.example.tictactoe.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class PlayDTO {
@@ -21,6 +20,6 @@ public class PlayDTO {
     @NotNull
     private int position;
     @NotNull
-    private Long id;
+    private Long gameId;
 
 }

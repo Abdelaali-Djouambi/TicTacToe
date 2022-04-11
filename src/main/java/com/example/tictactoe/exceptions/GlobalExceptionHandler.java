@@ -1,6 +1,5 @@
 package com.example.tictactoe.exceptions;
 
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -48,7 +47,7 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException ex) {
         ApiErrorResponse errorResponse = new ApiErrorResponse();
         List<String> errors =ex.getBindingResult().getFieldErrors().stream()
-                .map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList());
+                .map(source -> source.getField() + " : "+source.getDefaultMessage()).collect(Collectors.toList());
         errorResponse.setErrorCode(ErrorCode.VALIDATION_EXCEPTION.name());
         errorResponse.setMessage("Field validation errors");
         errorResponse.setTimestamp(LocalDateTime.now());

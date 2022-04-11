@@ -1,12 +1,12 @@
 package com.example.tictactoe.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 public class GameDTO extends AbstractDTO{
 

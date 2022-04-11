@@ -91,9 +91,9 @@ public class GameServiceImpl implements GameService {
         }
 
 
-        Optional<Game> optionalGame = gameRepository.findById(playDTO.getId());
+        Optional<Game> optionalGame = gameRepository.findById(playDTO.getGameId());
         Game game = optionalGame.orElseThrow(
-                () -> new ResourceNotFoundException("Game :" + playDTO.getId() + " Does not exist")
+                () -> new ResourceNotFoundException("Game :" + playDTO.getGameId() + " Does not exist")
         );
         if (game.getStatus() == WINNER_O || game.getStatus() == WINNER_X || game.getStatus() == DRAW) {
             throw new NotAllowedException("Game already ended " + game.getStatus());
